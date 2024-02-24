@@ -1,11 +1,16 @@
 {
-  "name": "custom-bundler",
-  "version": "1.0.0",
-  "main": "app.js",
-  "repository": "git@github.com:TahaDriss/custom-bundler.git",
-  "author": "Taha DRISS",
-  "license": "MIT",
-  "devDependencies": {
-    "typescript": "^5.3.3"
-  }
+   "name": "custom-bundler",
+   "version": "1.0.0",
+   "main": "app.js",
+   "repository": "git@github.com:TahaDriss/custom-bundler.git",
+   "author": "Taha DRISS",
+   "license": "MIT",
+   "scripts": {
+      "build": "tsc --watch",
+      "start": "node --watch build/app.js"
+   },
+   "devDependencies": {
+      "prettier": "3.2.5",
+      "typescript": "^5.3.3"
+   }
 }
