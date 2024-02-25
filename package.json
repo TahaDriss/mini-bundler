@@ -7,9 +7,10 @@
    "license": "MIT",
    "scripts": {
       "build": "tsc --watch",
-      "start": "node --watch build/app.js"
+      "start": "nodemon build/app.js"
    },
    "devDependencies": {
+      "nodemon": "^3.1.0",
       "prettier": "3.2.5",
       "typescript": "^5.3.3"
    }
