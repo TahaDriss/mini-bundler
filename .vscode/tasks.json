@@ -1,0 +1,32 @@
+{
+   "version": "2.0.0",
+   "tasks": [
+      {
+         "label": "dev",
+         "dependsOn": ["👀 tsc", "🎬 start"],
+         "problemMatcher": [],
+         "group": {
+            "kind": "build",
+            "isDefault": true
+         }
+      },
+      {
+         "type": "shell",
+         "command": "yarn start",
+         "group": {
+            "kind": "build"
+         },
+         "label": "🎬 start"
+      },
+      {
+         "type": "typescript",
+         "tsconfig": "tsconfig.json",
+         "option": "watch",
+         "problemMatcher": ["$tsc-watch"],
+         "group": {
+            "kind": "build"
+         },
+         "label": "👀 tsc"
+      }
+   ]
+}
