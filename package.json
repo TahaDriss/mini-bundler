@@ -1,8 +1,8 @@
 {
-   "name": "custom-bundler",
+   "name": "mini-bundler",
    "version": "1.0.0",
    "main": "app.js",
-   "repository": "git@github.com:TahaDriss/custom-bundler.git",
+   "repository": "git@github.com:TahaDriss/mini-bundler.git",
    "author": "Taha DRISS",
    "license": "MIT",
    "scripts": {
