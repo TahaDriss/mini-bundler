@@ -12,7 +12,8 @@
       },
       {
          "type": "shell",
-         "command": "yarn start",
+         "command": "bun",
+         "args": ["--watch", "app.ts"],
          "group": {
             "kind": "build"
          },
