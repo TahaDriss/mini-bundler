@@ -1,0 +1,14 @@
+
+
+
+build() -> rollup() -> rollupInternal() -> Graph -> moduleLoader -> module -> ast utils ...
+
+
+1- cli/run/index.ts : runRollup(command) 
+2- cli/run/build.ts : build(...)
+3- src/node-entry.ts -> src/rollup/rollup
+4- src/rollup/rollup: rollup() : graph.build
+5- src/graph
+    - moduleLoader
+6- src/moduleLoader: ModuleLoader
+5- src/module : Module : ast...
