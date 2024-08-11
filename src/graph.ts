@@ -27,4 +27,8 @@ export class Graph {
    addModule(path: string, module: Module) {
       this.modules.set(path, module)
    }
+
+   getModule(path: string) {
+      return this.modules.get(path)
+   }
 }

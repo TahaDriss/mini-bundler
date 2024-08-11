@@ -22,7 +22,7 @@ export class Module {
       this.extractDependencies()
       for (const dep of this.dependencies) {
          const depModule = await this.graph.loadModule(dep)
-         this
+         this.graph.addModule(dep, depModule)
       }
    }
 
