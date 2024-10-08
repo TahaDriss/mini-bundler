@@ -6,7 +6,7 @@ export class Module {
    ast: Program
    code: string
    dependencies: string[] = []
-   imports: Map<string, string> = new Map()
+   imports: ImportsMap = new Map()
 
    constructor(graph: Graph, code: string) {
       this.graph = graph
@@ -27,23 +27,31 @@ export class Module {
    }
 
    private extractDependencies() {
-      this.ast.body.forEach((node) => {
+      this.ast.body.forEach((node: any) => {
          if (node.type === 'ImportDeclaration') {
-            const source = node.source.value
-            if (source != null && typeof source === 'string') {
-               this.dependencies.push(source)
-            }
-            node.specifiers.forEach((specifier) => {
-               if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier') {
-                  const imported = specifier.imported.name
-                  const local = specifier.local.name
+            const source = node.source.value as string
+            this.dependencies.push(source)
+            this.handleImportSpecifiers(node.specifiers, source)
+         }
+      })
+   }
 
-                  this.imports.set(local, imported)
-               }
-            })
+   private handleImportSpecifiers(specifiers: any[], source: string) {
+      specifiers.forEach((specifier) => {
+         if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier') {
+            const imported = specifier.imported.name
+            const local = specifier.local.name
+            this.imports.set(local, { importedName: imported, source })
          }
       })
    }
 
    //   TODO : implement extractExport + linkImportToExport
 }
+
+interface ImportEntry {
+   importedName: string
+   source: string // The module path
+}
+
+type ImportsMap = Map<string, ImportEntry>
