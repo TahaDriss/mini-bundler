@@ -4,6 +4,9 @@ import { Module } from './module'
 
 describe('Module Bundler', () => {
    it('should initialize an empty module graph', async () => {
+      const graph = new Graph('example/index.js')
+      await graph.build()
+      expect(graph.modules.size).toBe(5)
    })
 
    // Test for loading a single module
