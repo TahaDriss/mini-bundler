@@ -8,6 +8,7 @@ export class Module {
    dependencies: string[] = []
    imports: ImportsMap = new Map()
    export: string[] = []
+   linkedImports = new Map<string, string>()
 
    constructor(graph: Graph, code: string) {
       this.graph = graph
@@ -15,6 +16,9 @@ export class Module {
       this.ast = this.parse(code)
       this.extractDependencies()
       this.extractExport() // this updates dependencies
+
+      this.linkDependencies()
+      this.linkImportToExport()
    }
 
    parse(content: string): Program {
@@ -69,7 +73,21 @@ export class Module {
       })
    }
 
-   //   TODO : implement extractExport + linkImportToExport
+   private linkImportToExport() {
+      this.imports.forEach((importPath, localName) => {
+         const importedModule = this.graph.getModule(importPath.source)
+         if (importedModule) {
+            const importedExports = importedModule.export
+            if (importedExports.includes(importPath.importedName)) {
+               this.linkedImports.set(localName, importPath.importedName)
+            } else {
+               console.warn(`Warning: ${importPath.importedName} not found in ${importPath.source}`)
+            }
+         } else {
+            console.warn(`Warning: Module ${importPath.source} not found`)
+         }
+      })
+   }
 }
 
 interface ImportEntry {
