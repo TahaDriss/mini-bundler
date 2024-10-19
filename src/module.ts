@@ -7,11 +7,14 @@ export class Module {
    code: string
    dependencies: string[] = []
    imports: ImportsMap = new Map()
+   export: string[] = []
 
    constructor(graph: Graph, code: string) {
       this.graph = graph
       this.code = code
       this.ast = this.parse(code)
+      this.extractDependencies()
+      this.extractExport() // this updates dependencies
    }
 
    parse(content: string): Program {
@@ -27,11 +30,31 @@ export class Module {
    }
 
    private extractDependencies() {
-      this.ast.body.forEach((node: any) => {
+      this.ast.body.forEach((node) => {
          if (node.type === 'ImportDeclaration') {
             const source = node.source.value as string
             this.dependencies.push(source)
             this.handleImportSpecifiers(node.specifiers, source)
+         }
+      })
+   }
+
+   private extractExport() {
+      this.ast.body.forEach((node) => {
+         if (node.type === 'ExportNamedDeclaration') {
+            node.specifiers.forEach((specifier) => {
+               if (specifier.type === 'ExportSpecifier' && specifier.exported.type === 'Identifier') {
+                  this.export.push(specifier.exported.name)
+               }
+            })
+         }
+
+         if (node.type === 'ExportDefaultDeclaration') this.export.push('default')
+
+         if (node.type === 'ExportAllDeclaration') {
+            // case of "export * from './moduleE.js';"
+            const source = node.source.value as string
+            this.dependencies.push(source)
          }
       })
    }
