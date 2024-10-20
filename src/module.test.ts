@@ -3,14 +3,14 @@ import { Graph } from './graph'
 
 describe('Module Bundler', () => {
    it('should initialize an empty module graph', async () => {
-      const graph = new Graph('example/index.js')
+      const graph = new Graph('examples/index.js')
       await graph.build()
 
       expect(graph.modules.size).toBe(5)
    })
 
    it('should load a single module and parse its AST', async () => {
-      const graph = new Graph('example/moduleA.js')
+      const graph = new Graph('examples/moduleA.js')
       await graph.build()
 
       const moduleA = graph.getModule(`${graph.entryDir}/moduleA.js`)
@@ -23,7 +23,7 @@ describe('Module Bundler', () => {
    })
 
    it('should extract dependencies from a module', async () => {
-      const graph = new Graph('example/moduleWithDeps.js')
+      const graph = new Graph('examples/moduleWithDeps.js')
       await graph.build()
 
       const path = `${graph.entryDir}/moduleWithDeps.js`
@@ -38,7 +38,7 @@ describe('Module Bundler', () => {
    })
 
    it('should link imports to the correct exports', async () => {
-      const graph = new Graph('example/moduleWithImport.js')
+      const graph = new Graph('examples/moduleWithImport.js')
       await graph.build()
       const dirPath = graph.entryDir
       graph.DEBUG()
