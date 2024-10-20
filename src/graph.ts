@@ -20,7 +20,7 @@ export class Graph {
    async loadModule(relativePath: string): Promise<Module> {
       const fullPath = this.resolveModulePath(relativePath)
       const code = await this.loadCode(fullPath)
-      const module = Module.INIT(this, code)
+      const module = Module.INIT(this, code, fullPath)
 
       return module
    }
@@ -56,5 +56,17 @@ export class Graph {
    resolveAbsolutePath(path: string): string {
       // If the path is relative, resolve it to an absolute path based on the current working directory
       return resolve(process.cwd(), path)
+   }
+
+   DEBUG = () => {
+      this.modules.forEach((m) => {
+         console.log('🔶 module path: ', m.path)
+
+         console.log('🔶 exports :')
+         console.log(m.export)
+
+         console.log('🔶 imports :')
+         console.log(m.imports)
+      })
    }
 }
