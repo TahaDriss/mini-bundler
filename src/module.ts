@@ -35,7 +35,7 @@ export class Module {
    async linkDependencies() {
       for (const dep of this.dependencies) {
          const depModule = await this.graph.loadModule(dep)
-         this.graph.addModule(dep, depModule)
+         if (depModule) this.graph.addModule(dep, depModule)
       }
    }
 

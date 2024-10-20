@@ -6,6 +6,7 @@ export class Graph {
    modules: Map<string, Module> = new Map()
    entryDir: string
    entryPointPath: string
+   loadingModules: Map<string, Promise<Module>> = new Map() // Using a Map for promises
 
    constructor(path: string) {
       this.entryDir = this.resolveEntryDirectory(path)
@@ -13,16 +14,37 @@ export class Graph {
    }
 
    async build() {
-      const module = await this.loadModule(this.entryPointPath)
-      this.addModule(this.entryPointPath, module)
+      try {
+         const module = await this.loadModule(this.entryPointPath)
+         if (module) this.addModule(this.entryPointPath, module)
+      } catch (error) {
+         console.error('Error building the module graph:', error)
+      }
    }
 
-   async loadModule(relativePath: string): Promise<Module> {
+   async loadModule(relativePath: string): Promise<Module | undefined> {
       const fullPath = this.resolveModulePath(relativePath)
-      const code = await this.loadCode(fullPath)
-      const module = Module.INIT(this, code, fullPath)
 
-      return module
+      if (this.loadingModules.has(fullPath)) {
+         console.warn(`Circular dependency detected: ${fullPath} is already loading.`)
+         return this.loadingModules.get(fullPath)!
+      }
+
+      const code = await this.loadCode(fullPath)
+      const modulePromise = Module.INIT(this, code, fullPath)
+      this.loadingModules.set(fullPath, modulePromise)
+
+      try {
+         const res = await modulePromise
+         return res
+      } catch (error) {
+         console.error(error)
+         return
+      } finally {
+         this.loadingModules.delete(fullPath)
+      }
+
+      // return modulePromise
    }
 
    async loadCode(path: string): Promise<string> {
@@ -54,7 +76,6 @@ export class Graph {
       return dirname(absoluteEntryPath)
    }
    resolveAbsolutePath(path: string): string {
-      // If the path is relative, resolve it to an absolute path based on the current working directory
       return resolve(process.cwd(), path)
    }
 
