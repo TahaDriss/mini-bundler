@@ -1,17 +1,25 @@
 import { describe, it, expect } from 'bun:test'
 import { Graph } from './graph'
-import { Module } from './module'
 
 describe('Module Bundler', () => {
    it('should initialize an empty module graph', async () => {
       const graph = new Graph('example/index.js')
       await graph.build()
+
       expect(graph.modules.size).toBe(5)
    })
 
-   // Test for loading a single module
-   it.skip('should load a single module and parse its AST', () => {
-      // Implement the test for loading one module
+   it('should load a single module and parse its AST', async () => {
+      const graph = new Graph('example/moduleA.js')
+      await graph.build()
+
+      const moduleA = graph.getModule(`${graph.entryDir}/moduleA.js`)
+
+      // Assertions
+      expect(moduleA).toBeDefined()
+      expect(moduleA?.ast).toBeDefined()
+      expect(moduleA?.ast.body).toBeInstanceOf(Array)
+      expect(moduleA?.dependencies.length).toBeGreaterThanOrEqual(0)
    })
 
    // Test for extracting dependencies from a module
