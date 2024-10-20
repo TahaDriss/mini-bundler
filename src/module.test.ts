@@ -22,9 +22,19 @@ describe('Module Bundler', () => {
       expect(moduleA?.dependencies.length).toBeGreaterThanOrEqual(0)
    })
 
-   // Test for extracting dependencies from a module
-   it.skip('should extract dependencies from a module', () => {
-      // Implement the test for dependency extraction
+   it('should extract dependencies from a module', async () => {
+      const graph = new Graph('example/moduleWithDeps.js')
+      await graph.build()
+
+      const path = `${graph.entryDir}/moduleWithDeps.js`
+      const moduleWithDeps = graph.getModule(path)
+
+      expect(moduleWithDeps).toBeDefined()
+      expect(moduleWithDeps?.dependencies).toBeInstanceOf(Array)
+      expect(moduleWithDeps?.dependencies.length).toBeGreaterThan(0)
+
+      expect(moduleWithDeps?.dependencies).toContain('./moduleA.js')
+      expect(moduleWithDeps?.dependencies).toContain('./moduleB.js')
    })
 
    // Test for linking imports to exports
