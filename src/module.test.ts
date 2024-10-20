@@ -37,9 +37,25 @@ describe('Module Bundler', () => {
       expect(moduleWithDeps?.dependencies).toContain('./moduleB.js')
    })
 
-   // Test for linking imports to exports
-   it.skip('should link imports to the correct exports', () => {
-      // Implement the test for linking imports and exports
+   it('should link imports to the correct exports', async () => {
+      const graph = new Graph('example/moduleWithImport.js')
+      await graph.build()
+      const dirPath = graph.entryDir
+      graph.DEBUG()
+
+      const moduleWithImport = graph.getModule(`${dirPath}/moduleWithImport.js`)
+      const moduleA = graph.getModule(`./moduleA.js`)
+
+      expect(moduleWithImport).toBeDefined()
+      expect(moduleA).toBeDefined()
+
+      const importedSymbol = moduleWithImport?.imports.get('greet')
+
+      expect(importedSymbol).toBeDefined()
+      expect(importedSymbol?.importedName).toBe('greet')
+      expect(importedSymbol?.source).toBe('./moduleA.js')
+
+      expect(moduleA?.export).toContain('greet')
    })
 
    // Test for resolving circular dependencies
