@@ -18,14 +18,13 @@ export class Module {
       this.ast = this.parse(code)
       this.extractDependencies()
       this.extractExport() // this updates dependencies
-
-      this.linkDependencies()
-      this.linkImportToExport()
    }
 
    static INIT = async (graph: Graph, code: string, fullPath: string): Promise<Module> => {
       const module = new Module(graph, code, fullPath)
       await module.linkDependencies()
+      module.linkImportToExport()
+
       return module
    }
 
@@ -34,7 +33,6 @@ export class Module {
    }
 
    async linkDependencies() {
-      this.extractDependencies()
       for (const dep of this.dependencies) {
          const depModule = await this.graph.loadModule(dep)
          this.graph.addModule(dep, depModule)
@@ -105,7 +103,7 @@ export class Module {
       this.imports.forEach((importPath, localName) => {
          const importedModule = this.graph.getModule(importPath.source)
 
-         if (importedModule) {
+         if (importedModule != null) {
             const importedExports = importedModule.exports
             if (importedExports.includes(importPath.importedName)) {
                this.linkedImports.set(localName, importPath.importedName)
