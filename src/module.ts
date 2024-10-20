@@ -10,7 +10,7 @@ export class Module {
    export: string[] = []
    linkedImports = new Map<string, string>()
 
-   constructor(graph: Graph, code: string) {
+   private constructor(graph: Graph, code: string) {
       this.graph = graph
       this.code = code
       this.ast = this.parse(code)
@@ -19,6 +19,12 @@ export class Module {
 
       this.linkDependencies()
       this.linkImportToExport()
+   }
+
+   static INIT = async (graph: Graph, code: string): Promise<Module> => {
+      const module = new Module(graph, code)
+      await module.linkDependencies()
+      return module
    }
 
    parse(content: string): Program {

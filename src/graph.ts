@@ -19,9 +19,8 @@ export class Graph {
 
    async loadModule(relativePath: string): Promise<Module> {
       const fullPath = this.resolveModulePath(relativePath)
-
       const code = await this.loadCode(fullPath)
-      const module = new Module(this, code)
+      const module = Module.INIT(this, code)
 
       return module
    }
