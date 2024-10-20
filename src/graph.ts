@@ -63,7 +63,7 @@ export class Graph {
          console.log('🔶 module path: ', m.path)
 
          console.log('🔶 exports :')
-         console.log(m.export)
+         console.log(m.exports)
 
          console.log('🔶 imports :')
          console.log(m.imports)

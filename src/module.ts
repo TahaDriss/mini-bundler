@@ -8,7 +8,7 @@ export class Module {
    path: string
    dependencies: string[] = []
    imports: ImportsMap = new Map()
-   export: string[] = []
+   public exports: string[] = []
    linkedImports = new Map<string, string>()
 
    private constructor(graph: Graph, code: string, path: string) {
@@ -57,7 +57,7 @@ export class Module {
             if (node.specifiers.length > 0) {
                node.specifiers.forEach((specifier) => {
                   if (specifier.type === 'ExportSpecifier' && specifier.exported.type === 'Identifier') {
-                     this.export.push(specifier.exported.name)
+                     this.exports.push(specifier.exported.name)
                   }
                })
             }
@@ -65,23 +65,23 @@ export class Module {
             if (node.declaration != null) {
                const declaration = node.declaration
                if (declaration.type === 'FunctionDeclaration' && declaration.id) {
-                  this.export.push(declaration.id.name)
+                  this.exports.push(declaration.id.name)
                }
                if (declaration.type === 'VariableDeclaration') {
                   declaration.declarations.forEach((declaration) => {
                      if (declaration.id.type === 'Identifier') {
-                        this.export.push(declaration.id.name)
+                        this.exports.push(declaration.id.name)
                      }
                   })
                }
                if (declaration.type === 'ClassDeclaration' && declaration.id) {
-                  this.export.push(declaration.id.name)
+                  this.exports.push(declaration.id.name)
                }
             }
          }
 
          if (node.type === 'ExportDefaultDeclaration') {
-            this.export.push('default')
+            this.exports.push('default')
          }
 
          if (node.type === 'ExportAllDeclaration') {
@@ -106,7 +106,7 @@ export class Module {
          const importedModule = this.graph.getModule(importPath.source)
 
          if (importedModule) {
-            const importedExports = importedModule.export
+            const importedExports = importedModule.exports
             if (importedExports.includes(importPath.importedName)) {
                this.linkedImports.set(localName, importPath.importedName)
             } else {
