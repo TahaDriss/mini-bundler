@@ -54,17 +54,37 @@ export class Module {
    private extractExport() {
       this.ast.body.forEach((node) => {
          if (node.type === 'ExportNamedDeclaration') {
-            node.specifiers.forEach((specifier) => {
-               if (specifier.type === 'ExportSpecifier' && specifier.exported.type === 'Identifier') {
-                  this.export.push(specifier.exported.name)
+            if (node.specifiers.length > 0) {
+               node.specifiers.forEach((specifier) => {
+                  if (specifier.type === 'ExportSpecifier' && specifier.exported.type === 'Identifier') {
+                     this.export.push(specifier.exported.name)
+                  }
+               })
+            }
+
+            if (node.declaration != null) {
+               const declaration = node.declaration
+               if (declaration.type === 'FunctionDeclaration' && declaration.id) {
+                  this.export.push(declaration.id.name)
                }
-            })
+               if (declaration.type === 'VariableDeclaration') {
+                  declaration.declarations.forEach((declaration) => {
+                     if (declaration.id.type === 'Identifier') {
+                        this.export.push(declaration.id.name)
+                     }
+                  })
+               }
+               if (declaration.type === 'ClassDeclaration' && declaration.id) {
+                  this.export.push(declaration.id.name)
+               }
+            }
          }
 
-         if (node.type === 'ExportDefaultDeclaration') this.export.push('default')
+         if (node.type === 'ExportDefaultDeclaration') {
+            this.export.push('default')
+         }
 
          if (node.type === 'ExportAllDeclaration') {
-            // case of "export * from './moduleE.js';"
             const source = node.source.value as string
             this.dependencies.push(source)
          }
@@ -84,6 +104,7 @@ export class Module {
    private linkImportToExport() {
       this.imports.forEach((importPath, localName) => {
          const importedModule = this.graph.getModule(importPath.source)
+
          if (importedModule) {
             const importedExports = importedModule.export
             if (importedExports.includes(importPath.importedName)) {
