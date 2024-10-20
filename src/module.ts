@@ -5,14 +5,16 @@ export class Module {
    graph: Graph
    ast: Program
    code: string
+   path: string
    dependencies: string[] = []
    imports: ImportsMap = new Map()
    export: string[] = []
    linkedImports = new Map<string, string>()
 
-   private constructor(graph: Graph, code: string) {
+   private constructor(graph: Graph, code: string, path: string) {
       this.graph = graph
       this.code = code
+      this.path = path
       this.ast = this.parse(code)
       this.extractDependencies()
       this.extractExport() // this updates dependencies
@@ -21,8 +23,8 @@ export class Module {
       this.linkImportToExport()
    }
 
-   static INIT = async (graph: Graph, code: string): Promise<Module> => {
-      const module = new Module(graph, code)
+   static INIT = async (graph: Graph, code: string, fullPath: string): Promise<Module> => {
+      const module = new Module(graph, code, fullPath)
       await module.linkDependencies()
       return module
    }
