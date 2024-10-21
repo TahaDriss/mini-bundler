@@ -41,7 +41,6 @@ describe('Module Bundler', () => {
       const graph = new Graph('examples/moduleWithImport.js')
       await graph.build()
       const dirPath = graph.entryDir
-      graph.DEBUG()
 
       const moduleWithImport = graph.getModule(`${dirPath}/moduleWithImport.js`)
       const moduleA = graph.getModule(`./moduleA.js`)
@@ -55,31 +54,33 @@ describe('Module Bundler', () => {
       expect(importedSymbol?.importedName).toBe('greet')
       expect(importedSymbol?.source).toBe('./moduleA.js')
 
-      expect(moduleA?.export).toContain('greet')
+      expect(moduleA?.exports).toContain('greet')
    })
 
-   // Test for resolving circular dependencies
-   it.skip('should resolve circular dependencies correctly', () => {
-      // Implement the test for circular dependency resolution
+   it('should resolve circular dependencies correctly', async () => {
+      const dirPath = 'examples/circular-dependency'
+      const graph = new Graph(`${dirPath}/moduleA.js`)
+
+      expect(graph.build()).rejects
    })
 
    // Test for handling re-exports
-   it.skip('should handle re-exporting all symbols from another module', () => {
-      // Implement the test for handling re-exports
-   })
+   // it('should handle re-exporting all symbols from another module', () => {
+   // // Implement the test for handling re-exports
+   // })
 
-   // Test for generating the final bundle
-   it.skip('should generate the final bundle with resolved imports', () => {
-      // Implement the test for bundle generation
-   })
+   // // Test for generating the final bundle
+   // it('should generate the final bundle with resolved imports', () => {
+   // //Implement the test for bundle generation
+   // })
 
-   // Test for export conflicts
-   it.skip('should handle export name conflicts', () => {
-      // Implement the test for export conflicts
-   })
+   // // Test for export conflicts
+   // it('should handle export name conflicts', () => {
+   // // Implement the test for export conflicts
+   // })
 
    // Test for handling missing imports
-   it.skip('should warn or throw an error for missing imports', () => {
-      // Implement the test for missing imports
-   })
+   // it('should warn or throw an error for missing imports', () => {
+   // Implement the test for missing imports
+   // })
 })

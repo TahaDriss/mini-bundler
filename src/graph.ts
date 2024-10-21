@@ -26,8 +26,7 @@ export class Graph {
       const fullPath = this.resolveModulePath(relativePath)
 
       if (this.loadingModules.has(fullPath)) {
-         console.warn(`Circular dependency detected: ${fullPath} is already loading.`)
-         return this.loadingModules.get(fullPath)!
+         throw new Error(`Circular dependency detected: ${fullPath} is already loading.`)
       }
 
       const code = await this.loadCode(fullPath)
@@ -43,8 +42,6 @@ export class Graph {
       } finally {
          this.loadingModules.delete(fullPath)
       }
-
-      // return modulePromise
    }
 
    async loadCode(path: string): Promise<string> {
@@ -88,6 +85,9 @@ export class Graph {
 
          console.log('🔶 imports :')
          console.log(m.imports)
+
+         console.log('🔶 links :')
+         console.log(m.linkedImports)
       })
    }
 }

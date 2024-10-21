@@ -44,7 +44,13 @@ export class Module {
          if (node.type === 'ImportDeclaration') {
             const source = node.source.value as string
             this.dependencies.push(source)
-            this.handleImportSpecifiers(node.specifiers, source)
+            node.specifiers.forEach((specifier) => {
+               if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier') {
+                  const imported = specifier.imported.name
+                  const local = specifier.local.name
+                  this.imports.set(local, { importedName: imported, source })
+               }
+            })
          }
       })
    }
@@ -89,29 +95,19 @@ export class Module {
       })
    }
 
-   private handleImportSpecifiers(specifiers: any[], source: string) {
-      specifiers.forEach((specifier) => {
-         if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier') {
-            const imported = specifier.imported.name
-            const local = specifier.local.name
-            this.imports.set(local, { importedName: imported, source })
-         }
-      })
-   }
-
    private linkImportToExport() {
-      this.imports.forEach((importPath, localName) => {
-         const importedModule = this.graph.getModule(importPath.source)
+      this.imports.forEach((importEntry, localName) => {
+         const importedModule = this.graph.getModule(importEntry.source)
 
          if (importedModule != null) {
             const importedExports = importedModule.exports
-            if (importedExports.includes(importPath.importedName)) {
-               this.linkedImports.set(localName, importPath.importedName)
+            if (importedExports.includes(importEntry.importedName)) {
+               this.linkedImports.set(localName, importEntry.importedName)
             } else {
-               console.warn(`Warning: ${importPath.importedName} not found in ${importPath.source}`)
+               console.warn(`Warning: ${importEntry.importedName} not found in ${importEntry.source}`)
             }
          } else {
-            console.warn(`Warning: Module ${importPath.source} not found`)
+            console.warn(`Warning: Module ${importEntry.source} not found`)
          }
       })
    }
